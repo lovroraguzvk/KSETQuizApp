@@ -7,15 +7,20 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
+import java.awt.event.InputEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class Scoreboard extends JFrame{
+
+    final String slidePath = new File("slides").getAbsolutePath().concat("\\");
+    public static final int NUM_OF_SLIDES = 20;
+    private static final String SLIDE_FILE_EXTENSION = ".PNG";
+    private static final String DATA_FILE_NAME = "ExampleData";
+    private static final int QUESTIONS_BOX_WIDTH = 800;
 
     JPanel panel;
     JPanel scoresBox;
@@ -37,10 +42,6 @@ public class Scoreboard extends JFrame{
 
     JPanel inputsAndLabels = new JPanel();
     JPanel inputsAndLabelsBox = new JPanel(); // Components
-
-    final String slidePath = "D:\\MyIdeaProjects\\QuizzApp\\prezentacija\\final\\";
-    public static final int NUM_OF_SLIDES = 20;
-    private static final int QUESTIONS_BOX_WIDTH = 800;
     Map<Integer, Set<String>> mapOfScores = new TreeMap<>(Collections.reverseOrder());
     LinkedList<Integer> lastFive = new LinkedList<>();
     int lastFiveCounter = 0;
@@ -73,7 +74,6 @@ public class Scoreboard extends JFrame{
         loadQuestions();
 
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setUndecorated(true);
         setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -97,8 +97,8 @@ public class Scoreboard extends JFrame{
 
                 BufferedImage slide = null;
                 try {
-                    slide = ImageIO.read(new File(slidePath + "Slide" + nextSlide + ".PNG"));
-                    slideLabel = new JLabel(new ImageIcon(slide.getScaledInstance(1000,675,Image.SCALE_FAST)));
+                    slide = ImageIO.read(new File(slidePath + "Slide" + nextSlide + SLIDE_FILE_EXTENSION));
+                    slideLabel = new JLabel(new ImageIcon(slide.getScaledInstance((QUESTIONS_BOX_WIDTH - 125), (int) ((QUESTIONS_BOX_WIDTH - (float)3/4*125) * ((float)3/4)),Image.SCALE_SMOOTH)));
                     slideLabel.setBorder(BorderFactory.createMatteBorder(3,3,3,3,Color.BLACK));
                 } catch (IOException ioException) {
                     System.out.println("No more slides!");;
@@ -110,7 +110,7 @@ public class Scoreboard extends JFrame{
             }
         };
 
-        panel.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("RIGHT"),
+        panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("RIGHT"),
                 "next_slide");
         panel.getActionMap().put("next_slide",
                 nextSlideAction);
@@ -126,7 +126,7 @@ public class Scoreboard extends JFrame{
             }
         };
 
-        panel.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("D"),
+        panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke('D', InputEvent.CTRL_DOWN_MASK),
                 "dev_mode");
         panel.getActionMap().put("dev_mode",
                 devModeAction);
@@ -142,7 +142,7 @@ public class Scoreboard extends JFrame{
             }
         };
 
-        panel.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("R"),
+        panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke('R', InputEvent.CTRL_DOWN_MASK),
                 "reset");
         panel.getActionMap().put("reset",
                 resetAction);
@@ -157,7 +157,7 @@ public class Scoreboard extends JFrame{
             }
         };
 
-        panel.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("S"),
+        panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke('S', InputEvent.CTRL_DOWN_MASK),
                 "score");
         panel.getActionMap().put("score",
                 enterScoreAction);
@@ -233,8 +233,8 @@ public class Scoreboard extends JFrame{
     }
 
     private void createQuestionsBox() throws IOException {
-        BufferedImage slide = ImageIO.read(new File(slidePath + "Slide" + "1" + ".PNG"));
-        slideLabel = new JLabel(new ImageIcon(slide.getScaledInstance((QUESTIONS_BOX_WIDTH - 125), (int) ((QUESTIONS_BOX_WIDTH - (float)3/4*125) * ((float)3/4)),Image.SCALE_FAST)));
+        BufferedImage slide = ImageIO.read(new File(slidePath + "Slide" + "1" + SLIDE_FILE_EXTENSION));
+        slideLabel = new JLabel(new ImageIcon(slide.getScaledInstance((QUESTIONS_BOX_WIDTH - 125), (int) ((QUESTIONS_BOX_WIDTH - (float)3/4*125) * ((float)3/4)),Image.SCALE_SMOOTH)));
         slideLabel.setBorder(BorderFactory.createMatteBorder(3,3,3,3,Color.BLACK));
 
         questions = new JPanel();
@@ -257,12 +257,12 @@ public class Scoreboard extends JFrame{
         scoresBox.setLayout(new BorderLayout());
         scores.setLayout(new BoxLayout(scores, BoxLayout.Y_AXIS));
 
-        scoresBox.setBorder(BorderFactory.createEmptyBorder(20,20,20,30));
-        scores.setBorder(BorderFactory.createEmptyBorder(50,0,0,0));
+        scoresBox.setBorder(BorderFactory.createEmptyBorder(20,70,20,40));
+        scores.setBorder(BorderFactory.createEmptyBorder(20,0,0,0));
 
         JLabel scoresTitle = new JLabel("Tablica uspješnosti:");
-        scoresTitle.setBorder(BorderFactory.createEmptyBorder(0,120,0,0));
-        scoresTitle.setFont(new Font("Arial", Font.ITALIC, 45));
+        scoresTitle.setBorder(BorderFactory.createEmptyBorder(0,10,0,0));
+        scoresTitle.setFont(new Font("Arial", Font.ITALIC, 35));
 
         scoresBox.add(scoresScroll, BorderLayout.CENTER);
         scoresBox.add(scoresTitle, BorderLayout.NORTH);
@@ -278,12 +278,12 @@ public class Scoreboard extends JFrame{
         header.setBorder(BorderFactory.createMatteBorder(0,0,5,0,Color.BLACK));
 
         BufferedImage myPicture = ImageIO.read(new File("D:\\MyIdeaProjects\\QuizzApp\\header.jpg"));
-        JLabel picLabel = new JLabel(new ImageIcon(myPicture.getScaledInstance(200,200,Image.SCALE_FAST)));
+        JLabel picLabel = new JLabel(new ImageIcon(myPicture.getScaledInstance(120,120,Image.SCALE_FAST)));
         picLabel.setBorder(BorderFactory.createMatteBorder(5,5,5,5,Color.BLACK));
 
         JLabel title = new JLabel("Videosekcija Kviz");
         title.setBorder(BorderFactory.createEmptyBorder(0,100,0,0));
-        title.setFont(new Font("Cambria", Font.BOLD, 100));
+        title.setFont(new Font("Cambria", Font.BOLD, 75));
 
         header.add(picLabel);
         header.add(title);
@@ -299,7 +299,7 @@ public class Scoreboard extends JFrame{
 
     private void saveToExcel() throws IOException{
         XSSFWorkbook workbook = new XSSFWorkbook();
-        XSSFSheet sheet = workbook.createSheet("Podaci");
+        XSSFSheet sheet = workbook.createSheet(DATA_FILE_NAME);
 
         Row header = sheet.createRow(0);
         header.createCell(0).setCellValue("Ime");
@@ -316,13 +316,13 @@ public class Scoreboard extends JFrame{
             i++;
         }
 
-        try (FileOutputStream outputStream = new FileOutputStream("Podaci" + "1" + ".xlsx")) {
+        try (FileOutputStream outputStream = new FileOutputStream(DATA_FILE_NAME + ".xlsx")) {
             workbook.write(outputStream);
         }
     }
 
     private void loadFromExcel() throws IOException {
-        XSSFWorkbook wb = new XSSFWorkbook("Podaci" + fileNum + ".xlsx");
+        XSSFWorkbook wb = new XSSFWorkbook(DATA_FILE_NAME + ".xlsx");
         XSSFSheet sheet = wb.getSheetAt(0);
 
         sheet.forEach((row) -> {
@@ -434,20 +434,20 @@ public class Scoreboard extends JFrame{
         infoList.forEach((info) -> {
             JPanel labelPanel = new JPanel();
             labelPanel.setLayout(new FlowLayout());
-            //labelPanel.setPreferredSize(new Dimension(1000,80));
+            labelPanel.setPreferredSize(new Dimension(1000,80));
 
             JLabel label = new JLabel(counter + ". " + info.getName() + " - " + info.getScore());
-            label.setFont(new Font("Arial", Font.PLAIN, 35));
+            label.setFont(new Font("Arial", Font.PLAIN, 27));
             label.setHorizontalAlignment(SwingConstants.LEFT);
             label.setVerticalAlignment(SwingConstants.CENTER);
             labelPanel.setBorder(BorderFactory.createMatteBorder(4,0,0,0, Color.BLACK));
             labelPanel.setBackground(new Color(94, 200, 242));
-            label.setPreferredSize(new Dimension(500,100));
-            labelPanel.setPreferredSize(new Dimension(20,100));
+            label.setPreferredSize(new Dimension(500,70));
+            labelPanel.setPreferredSize(new Dimension(20,70));
 
             if(counter.toString().equals("1")) {
                 labelPanel.setBorder(BorderFactory.createMatteBorder(0,0,0,0, Color.BLACK));
-                label.setFont(new Font("Arial", Font.BOLD, 35));
+                label.setFont(new Font("Arial", Font.BOLD, 27));
             }
 
             labelPanel.add(label);
@@ -497,7 +497,7 @@ public class Scoreboard extends JFrame{
     }
 
     public void removeAllFromExcel() throws IOException {
-        XSSFWorkbook wb = new XSSFWorkbook("Podaci" + fileNum + ".xlsx");
+        XSSFWorkbook wb = new XSSFWorkbook(DATA_FILE_NAME + ".xlsx");
         XSSFSheet sheet = wb.getSheetAt(0);
 
         sheet.forEach((row) -> row.getSheet().removeRow(row));
