@@ -5,6 +5,11 @@ Made for a club I volunteer at.
 
 ## Instructions
 
+Start the app with the QuizApp.jar file.
+
+Insert the name of the quiz, and select the folder with the apropriate question slides and also select an already
+created excel file (where the data of the scores will be saved), if the excel already contains scores it will instead load them.
+
 The app is controlled using keystrokes displayed below.
 | Keystroke  | Action |
 | ------------- | ------------- |
