@@ -3,6 +3,18 @@
 Specialized Java Quiz app with the possibility of entering a score and displaying them.
 Made for a club I volunteer at.
 
+## How to run
+
+Clone the repository, then compile and package it using:
+```
+mvn compile
+mvn package
+```
+Then run it using:
+```
+java -jar target/QuizzApp-1.1-SNAPSHOT-jar-with-dependencies.jar
+```
+
 ## Instructions
 
 Start the app with the QuizApp.jar file.
