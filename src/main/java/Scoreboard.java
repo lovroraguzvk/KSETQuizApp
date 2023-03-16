@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Scoreboard extends JFrame{
 
     final String slidePath = new File("slides").getAbsolutePath().concat("\\");
-    public static final int NUM_OF_SLIDES = 20;
+    public static final int NUM_OF_SLIDES = 24;
     private static final String SLIDE_FILE_EXTENSION = ".PNG";
     private static final String DATA_FILE_NAME = "ExampleData";
     private static final int QUESTIONS_BOX_WIDTH = 800;
@@ -110,20 +110,24 @@ public class Scoreboard extends JFrame{
                 }
                 System.out.println(lastFive);
 
-                questionsBox.remove(slideLabel);
-
-                BufferedImage slide = null;
-                try {
-                    slide = ImageIO.read(new File(folderWithSlides.getAbsolutePath() + "\\Slide" + nextSlide + SLIDE_FILE_EXTENSION));
-                    slideLabel = new JLabel(new ImageIcon(slide.getScaledInstance((QUESTIONS_BOX_WIDTH - 125), (int) ((QUESTIONS_BOX_WIDTH - (float)3/4*125) * ((float)3/4)),Image.SCALE_SMOOTH)));
-                    slideLabel.setBorder(BorderFactory.createMatteBorder(3,3,3,3,Color.BLACK));
-                } catch (IOException ioException) {
-                    System.out.println("No more slides!");;
-                }
-
-                questionsBox.add(slideLabel);
+                loadSlide(nextSlide);
                 refresh();
 
+            }
+        };
+
+        Action prevSlideAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println(lastFive);
+                lastFive.removeLast();
+                int nextSlide = lastFive.getLast();
+                lastFiveCounter--;
+
+                questionsBox.remove(slideLabel);
+
+                loadSlide(nextSlide);
+                refresh();
             }
         };
 
@@ -131,6 +135,12 @@ public class Scoreboard extends JFrame{
                 "next_slide");
         panel.getActionMap().put("next_slide",
                 nextSlideAction);
+
+        panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("LEFT"),
+                "prev_slide");
+        panel.getActionMap().put("prev_slide",
+                prevSlideAction);
+
 
         Action devModeAction = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
@@ -180,6 +190,22 @@ public class Scoreboard extends JFrame{
                 "score");
         panel.getActionMap().put("score",
                 enterScoreAction);
+    }
+
+    private void loadSlide(int nextSlide) {
+        questionsBox.remove(slideLabel);
+
+        BufferedImage slide = null;
+        try {
+            slide = ImageIO.read(new File(folderWithSlides.getAbsolutePath() + "\\Slide" + nextSlide + SLIDE_FILE_EXTENSION));
+            slideLabel = new JLabel(new ImageIcon(slide.getScaledInstance((QUESTIONS_BOX_WIDTH - 125), (int) ((QUESTIONS_BOX_WIDTH - (float)3/4*125) * ((float)3/4)),Image.SCALE_SMOOTH)));
+            slideLabel.setBorder(BorderFactory.createMatteBorder(3,3,3,3,Color.BLACK));
+        } catch (IOException ioException) {
+            System.out.println("No more slides!");;
+        }
+
+        questionsBox.add(slideLabel);
+        refresh();
     }
 
     private void createInputBox() {
@@ -535,10 +561,15 @@ public class Scoreboard extends JFrame{
 
             scoreBtn.addActionListener((e) -> {
                 double scoreInt = Double.parseDouble(scoreBtn.getText().split(" ")[scoreBtn.getText().split(" ").length - 1]);
-                String user = scoreBtn.getText().split(" ")[1];
+                String user = scoreBtn.getText();
+                user = user.substring(0, user.length() - (scoreInt + "").length() - 2);
+                user = user.split(" ", 2)[1].trim();
 
-
-                infoList.removeIf((info) -> info.getScore() == scoreInt && info.getName().equals(user));
+                System.out.println(user + " " + scoreInt);
+                infoList.forEach((info) -> System.out.println(info.getName() + " " + info.getScore()));
+                String finalUser = user;
+                infoList.removeIf((info) -> info.getScore() == scoreInt && info.getName().equals(finalUser));
+                System.out.println(infoList);
 
                 scores.remove(scoreBtn);
                 numOfPeople--;
